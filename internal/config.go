@@ -41,10 +41,10 @@ type ChatConfig struct {
 }
 
 type MCPConfig struct {
-	Enabled  bool
+	Enabled    bool
 	GatewayURL string
-	APIKey   string
-	Tools    []MCPTool
+	APIKey     string
+	Tools      []MCPTool
 }
 
 type MCPTool struct {
@@ -114,7 +114,7 @@ func LoadConfig() Config {
 		MCPConfig: MCPConfig{
 			Enabled:    getEnv("MCP_ENABLED", "true") == "true",
 			GatewayURL: getEnv("MCP_GATEWAY_URL", "http://localhost:8082"),
-			APIKey:    getEnv("MCP_API_KEY", ""),
+			APIKey:     getEnv("MCP_API_KEY", ""),
 			Tools: []MCPTool{
 				{Name: "get_event_details", Description: "Get event details by ID", Handler: "get_event"},
 				{Name: "search_events", Description: "Search for events", Handler: "search_events"},

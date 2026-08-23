@@ -41,9 +41,9 @@ type MCPService struct {
 
 func NewMCPService(cfg internal.MCPConfig, logger *zap.Logger, eventSvcURL string) *MCPService {
 	return &MCPService{
-		cfg:        cfg,
-		logger:     logger,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
+		cfg:         cfg,
+		logger:      logger,
+		httpClient:  &http.Client{Timeout: 30 * time.Second},
 		eventSvcURL: eventSvcURL,
 	}
 }
@@ -105,10 +105,10 @@ func (s *MCPService) ListTools(ctx context.Context) ([]Tool, error) {
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
-					"event_id":   map[string]interface{}{"type": "string"},
-					"title":      map[string]interface{}{"type": "string"},
-					"capacity":   map[string]interface{}{"type": "integer"},
-					"status":     map[string]interface{}{"type": "string"},
+					"event_id": map[string]interface{}{"type": "string"},
+					"title":    map[string]interface{}{"type": "string"},
+					"capacity": map[string]interface{}{"type": "integer"},
+					"status":   map[string]interface{}{"type": "string"},
 				},
 				"required": []string{"event_id"},
 			},
@@ -162,8 +162,8 @@ func (s *MCPService) ListTools(ctx context.Context) ([]Tool, error) {
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
-					"location":    map[string]interface{}{"type": "string"},
-					"event_date":  map[string]interface{}{"type": "string"},
+					"location":   map[string]interface{}{"type": "string"},
+					"event_date": map[string]interface{}{"type": "string"},
 				},
 				"required": []string{"location"},
 			},
@@ -190,8 +190,8 @@ func (s *MCPService) ListTools(ctx context.Context) ([]Tool, error) {
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
-					"event_id":  map[string]interface{}{"type": "string"},
-					"metric":    map[string]interface{}{"type": "string"},
+					"event_id":   map[string]interface{}{"type": "string"},
+					"metric":     map[string]interface{}{"type": "string"},
 					"time_range": map[string]interface{}{"type": "string"},
 				},
 				"required": []string{"event_id"},
@@ -204,8 +204,8 @@ func (s *MCPService) ListTools(ctx context.Context) ([]Tool, error) {
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
-					"event_id":      map[string]interface{}{"type": "string"},
-					"user_id":       map[string]interface{}{"type": "string"},
+					"event_id":        map[string]interface{}{"type": "string"},
+					"user_id":         map[string]interface{}{"type": "string"},
 					"registration_id": map[string]interface{}{"type": "string"},
 				},
 				"required": []string{"event_id"},
@@ -283,17 +283,17 @@ func (s *MCPService) getEventDetails(ctx context.Context, req ToolCallRequest) (
 		return &MCPToolResult{
 			Success: true,
 			Output: map[string]interface{}{
-				"event_id":          eventID,
-				"title":             "Tech Conference 2024",
-				"description":       "Annual technology conference",
-				"start_time":        "2024-12-15T09:00:00Z",
-				"end_time":          "2024-12-17T18:00:00Z",
-				"location":          "San Francisco Convention Center",
-				"capacity":          5000,
-				"registered_count":  3250,
-				"status":            "active",
-				"category":          "technology",
-				"organizer":         "EMS Events",
+				"event_id":         eventID,
+				"title":            "Tech Conference 2024",
+				"description":      "Annual technology conference",
+				"start_time":       "2024-12-15T09:00:00Z",
+				"end_time":         "2024-12-17T18:00:00Z",
+				"location":         "San Francisco Convention Center",
+				"capacity":         5000,
+				"registered_count": 3250,
+				"status":           "active",
+				"category":         "technology",
+				"organizer":        "EMS Events",
 			},
 		}, nil
 	}
@@ -315,28 +315,28 @@ func (s *MCPService) searchEvents(ctx context.Context, req ToolCallRequest) (*MC
 	// Return mock search results for demo
 	events := []map[string]interface{}{
 		{
-			"id":          "evt_001",
-			"title":       "Tech Conference 2024",
-			"start_time":  "2024-12-15T09:00:00Z",
-			"location":    "San Francisco",
-			"category":    "technology",
-			"attendees":   3250,
+			"id":         "evt_001",
+			"title":      "Tech Conference 2024",
+			"start_time": "2024-12-15T09:00:00Z",
+			"location":   "San Francisco",
+			"category":   "technology",
+			"attendees":  3250,
 		},
 		{
-			"id":          "evt_002",
-			"title":       "AI Summit",
-			"start_time":  "2024-11-20T10:00:00Z",
-			"location":    "New York",
-			"category":    "technology",
-			"attendees":   1500,
+			"id":         "evt_002",
+			"title":      "AI Summit",
+			"start_time": "2024-11-20T10:00:00Z",
+			"location":   "New York",
+			"category":   "technology",
+			"attendees":  1500,
 		},
 		{
-			"id":          "evt_003",
-			"title":       "Music Festival",
-			"start_time":  "2025-01-10T12:00:00Z",
-			"location":    "Los Angeles",
-			"category":    "entertainment",
-			"attendees":   10000,
+			"id":         "evt_003",
+			"title":      "Music Festival",
+			"start_time": "2025-01-10T12:00:00Z",
+			"location":   "Los Angeles",
+			"category":   "entertainment",
+			"attendees":  10000,
 		},
 	}
 
@@ -370,8 +370,8 @@ func (s *MCPService) updateEvent(ctx context.Context, req ToolCallRequest) (*MCP
 	return &MCPToolResult{
 		Success: true,
 		Output: map[string]interface{}{
-			"event_id": eventID,
-			"status":   "updated",
+			"event_id":   eventID,
+			"status":     "updated",
 			"updated_at": time.Now().Format(time.RFC3339),
 		},
 	}, nil
@@ -416,9 +416,9 @@ func (s *MCPService) cancelRegistration(ctx context.Context, req ToolCallRequest
 	return &MCPToolResult{
 		Success: true,
 		Output: map[string]interface{}{
-			"status":       "cancelled",
+			"status":        "cancelled",
 			"refund_status": "pending",
-			"cancelled_at": time.Now().Format(time.RFC3339),
+			"cancelled_at":  time.Now().Format(time.RFC3339),
 		},
 	}, nil
 }
@@ -435,7 +435,7 @@ func (s *MCPService) getWeather(ctx context.Context, req ToolCallRequest) (*MCPT
 	return &MCPToolResult{
 		Success: true,
 		Output: map[string]interface{}{
-			"location":     location,
+			"location":    location,
 			"temperature": 72,
 			"condition":   "Sunny",
 			"humidity":    45,
@@ -455,9 +455,9 @@ func (s *MCPService) sendNotification(ctx context.Context, req ToolCallRequest) 
 		Success: true,
 		Output: map[string]interface{}{
 			"notification_id": notifID,
-			"status":         "sent",
-			"recipients":     3250,
-			"sent_at":        time.Now().Format(time.RFC3339),
+			"status":          "sent",
+			"recipients":      3250,
+			"sent_at":         time.Now().Format(time.RFC3339),
 		},
 	}, nil
 }
@@ -467,13 +467,13 @@ func (s *MCPService) getAnalytics(ctx context.Context, req ToolCallRequest) (*MC
 	return &MCPToolResult{
 		Success: true,
 		Output: map[string]interface{}{
-			"event_id":    eventID,
+			"event_id": eventID,
 			"metrics": map[string]interface{}{
 				"total_registrations": 5000,
 				"active_attendees":    4850,
 				"check_ins":           3200,
-				"page_views":           50000,
-				"engagement_rate":      0.78,
+				"page_views":          50000,
+				"engagement_rate":     0.78,
 			},
 			"generated_at": time.Now().Format(time.RFC3339),
 		},
@@ -485,8 +485,8 @@ func (s *MCPService) generateQRCode(ctx context.Context, req ToolCallRequest) (*
 	return &MCPToolResult{
 		Success: true,
 		Output: map[string]interface{}{
-			"qr_code_id":   fmt.Sprintf("qr_%d", time.Now().Unix()),
-			"qr_code_url":  fmt.Sprintf("https://api.ems.local/qr/%s.png", regID),
+			"qr_code_id":      fmt.Sprintf("qr_%d", time.Now().Unix()),
+			"qr_code_url":     fmt.Sprintf("https://api.ems.local/qr/%s.png", regID),
 			"registration_id": regID,
 		},
 	}, nil

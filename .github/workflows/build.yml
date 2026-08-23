@@ -57,7 +57,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Dockerfile
-        if: "!contains(files, 'Dockerfile')"
+        if: runner.os == 'Linux'
         run: |
           cat > Dockerfile << 'DOCKERFILE_EOF'
           FROM golang:1.22-alpine AS builder

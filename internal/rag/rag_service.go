@@ -140,7 +140,7 @@ func (s *RAGService) generateAnswer(ctx context.Context, query, context string) 
 	}
 	prompt := fmt.Sprintf(`[INST] Based on context, answer question. Context: %s Question: %s Answer: [/INST]`, context, query)
 	payload := map[string]interface{}{
-		"inputs":   prompt,
+		"inputs":     prompt,
 		"parameters": map[string]interface{}{"max_new_tokens": 512, "temperature": 0.7},
 	}
 	body, _ := json.Marshal(payload)

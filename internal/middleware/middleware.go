@@ -58,8 +58,8 @@ type rateLimiter struct {
 }
 
 type visitor struct {
-	tokens    float64
-	lastSeen  time.Time
+	tokens   float64
+	lastSeen time.Time
 }
 
 func NewRateLimiter(rate int, burst int, window time.Duration) *rateLimiter {

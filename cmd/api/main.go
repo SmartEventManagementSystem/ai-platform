@@ -166,10 +166,10 @@ func main() {
 func healthHandler(cfg ai.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status":    "ok",
-			"service":   "ai-platform",
-			"version":   "1.0.0",
-			"timestamp": time.Now().UTC().Format(time.RFC3339),
+			"status":      "ok",
+			"service":     "ai-platform",
+			"version":     "1.0.0",
+			"timestamp":   time.Now().UTC().Format(time.RFC3339),
 			"environment": cfg.Environment,
 		})
 	}
@@ -190,11 +190,11 @@ func readyHandler(chatService *services.ChatService) gin.HandlerFunc {
 func metricsHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		metrics := map[string]interface{}{
-			"requests_total":    0,
-			"requests_success":   0,
-			"requests_failed":    0,
-			"avg_latency_ms":    0,
-			"timestamp":         time.Now().UTC().Format(time.RFC3339),
+			"requests_total":   0,
+			"requests_success": 0,
+			"requests_failed":  0,
+			"avg_latency_ms":   0,
+			"timestamp":        time.Now().UTC().Format(time.RFC3339),
 		}
 		c.JSON(http.StatusOK, metrics)
 	}
@@ -211,11 +211,11 @@ func chatWithKafka(chatService *services.ChatService, producer *services.KafkaPr
 		// Send to Kafka for async processing
 		if producer != nil {
 			event := map[string]interface{}{
-				"type":      "chat_request",
+				"type":       "chat_request",
 				"session_id": req.SessionID,
-				"user_id":   req.UserID,
-				"event_id":  req.EventID,
-				"timestamp": time.Now().UTC().Format(time.RFC3339),
+				"user_id":    req.UserID,
+				"event_id":   req.EventID,
+				"timestamp":  time.Now().UTC().Format(time.RFC3339),
 			}
 			producer.Publish("chat.requests", event)
 		}
@@ -300,7 +300,7 @@ func availableModelsHandler(cfg ai.Config) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"models": models,
+			"models":  models,
 			"default": cfg.ChatConfig.LLMModel,
 		})
 	}

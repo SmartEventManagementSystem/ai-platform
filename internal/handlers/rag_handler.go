@@ -17,9 +17,9 @@ func NewRAGHandler(svc *rag.RAGService) *RAGHandler {
 }
 
 type QueryRequest struct {
-	Query  string `json:"query" binding:"required"`
+	Query   string `json:"query" binding:"required"`
 	EventID string `json:"event_id"`
-	TopK   int    `json:"top_k"`
+	TopK    int    `json:"top_k"`
 }
 
 type IngestRequest struct {

@@ -96,7 +96,7 @@ func (h *AIHandler) ListModels(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"models": models,
+		"models":  models,
 		"default": "mistralai/Mistral-7B-Instruct-v0.2",
 	})
 }

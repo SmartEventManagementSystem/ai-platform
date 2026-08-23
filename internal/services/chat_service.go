@@ -17,83 +17,83 @@ import (
 )
 
 type Message struct {
-	Role      string                 `json:"role"`
-	Content   string                 `json:"content"`
-	ToolCalls []ToolCall             `json:"tool_calls,omitempty"`
-	ToolUseID string                 `json:"tool_call_id,omitempty"`
-	Name      string                 `json:"name,omitempty"`
+	Role      string     `json:"role"`
+	Content   string     `json:"content"`
+	ToolCalls []ToolCall `json:"tool_calls,omitempty"`
+	ToolUseID string     `json:"tool_call_id,omitempty"`
+	Name      string     `json:"name,omitempty"`
 }
 
 type ToolCall struct {
-	ID       string                 `json:"id,omitempty"`
-	Type     string                 `json:"type,omitempty"`
-	Function FunctionCall            `json:"function,omitempty"`
+	ID       string       `json:"id,omitempty"`
+	Type     string       `json:"type,omitempty"`
+	Function FunctionCall `json:"function,omitempty"`
 }
 
 type FunctionCall struct {
-	Name      string                 `json:"name,omitempty"`
-	Arguments string                 `json:"arguments,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Arguments string `json:"arguments,omitempty"`
 }
 
 type ChatRequest struct {
-	Messages      []Message           `json:"messages"`
-	EventID      string              `json:"event_id,omitempty"`
-	SessionID    string              `json:"session_id,omitempty"`
-	UserID       string              `json:"user_id,omitempty"`
-	Model        string              `json:"model,omitempty"`
-	Stream       bool                `json:"stream,omitempty"`
-	Temperature  float64             `json:"temperature,omitempty"`
-	MaxTokens    int                 `json:"max_tokens,omitempty"`
-	Tools        []Tool              `json:"tools,omitempty"`
-	ToolChoice   string              `json:"tool_choice,omitempty"`
+	Messages    []Message `json:"messages"`
+	EventID     string    `json:"event_id,omitempty"`
+	SessionID   string    `json:"session_id,omitempty"`
+	UserID      string    `json:"user_id,omitempty"`
+	Model       string    `json:"model,omitempty"`
+	Stream      bool      `json:"stream,omitempty"`
+	Temperature float64   `json:"temperature,omitempty"`
+	MaxTokens   int       `json:"max_tokens,omitempty"`
+	Tools       []Tool    `json:"tools,omitempty"`
+	ToolChoice  string    `json:"tool_choice,omitempty"`
 }
 
 type ChatResponse struct {
-	Content   string                 `json:"content"`
-	Model     string                `json:"model"`
-	Usage     Usage                  `json:"usage,omitempty"`
-	ToolCalls []ToolCallResult      `json:"tool_calls,omitempty"`
-	FinishReason string              `json:"finish_reason,omitempty"`
+	Content      string           `json:"content"`
+	Model        string           `json:"model"`
+	Usage        Usage            `json:"usage,omitempty"`
+	ToolCalls    []ToolCallResult `json:"tool_calls,omitempty"`
+	FinishReason string           `json:"finish_reason,omitempty"`
 }
 
 type ToolCallResult struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Content  string `json:"content"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
 type Usage struct {
 	PromptTokens     int `json:"prompt_tokens"`
 	CompletionTokens int `json:"completion_tokens"`
-	TotalTokens     int `json:"total_tokens"`
+	TotalTokens      int `json:"total_tokens"`
 }
 
 type ChatCompletionChoice struct {
 	Message      Message `json:"message"`
-	FinishReason string `json:"finish_reason"`
+	FinishReason string  `json:"finish_reason"`
 }
 
 type ChatCompletionResponse struct {
-	ID      string               `json:"id"`
-	Object  string               `json:"object"`
-	Created int64                `json:"created"`
-	Model   string               `json:"model"`
+	ID      string                 `json:"id"`
+	Object  string                 `json:"object"`
+	Created int64                  `json:"created"`
+	Model   string                 `json:"model"`
 	Choices []ChatCompletionChoice `json:"choices"`
-	Usage   Usage                `json:"usage"`
+	Usage   Usage                  `json:"usage"`
 }
 
 type session struct {
 	Messages []Message
-	mu      sync.RWMutex
+	mu       sync.RWMutex
 }
 
 type ChatService struct {
-	cfg         internal.ChatConfig
-	logger      *zap.Logger
-	client      *http.Client
-	sessions    map[string]*session
-	sessionsMu  sync.RWMutex
-	mcpService  *MCPService
+	cfg        internal.ChatConfig
+	logger     *zap.Logger
+	client     *http.Client
+	sessions   map[string]*session
+	sessionsMu sync.RWMutex
+	mcpService *MCPService
 }
 
 func NewChatService(cfg internal.ChatConfig, logger *zap.Logger, mcp *MCPService) *ChatService {
@@ -150,9 +150,9 @@ func (s *ChatService) Chat(ctx context.Context, req ChatRequest) (*ChatResponse,
 			req.Messages = append(req.Messages, Message{Role: "assistant", Content: result})
 			for _, tr := range toolResults {
 				req.Messages = append(req.Messages, Message{
-					Role:    "tool",
-					Content: tr.Content,
-					Name:    tr.Name,
+					Role:      "tool",
+					Content:   tr.Content,
+					Name:      tr.Name,
 					ToolUseID: tr.ID,
 				})
 			}
@@ -163,9 +163,9 @@ func (s *ChatService) Chat(ctx context.Context, req ChatRequest) (*ChatResponse,
 		}
 
 		return &ChatResponse{
-			Content:    result,
-			Model:      model,
-			ToolCalls:  toolResults,
+			Content:      result,
+			Model:        model,
+			ToolCalls:    toolResults,
 			FinishReason: "tool_calls",
 		}, nil
 	}
@@ -190,12 +190,12 @@ func (s *ChatService) callHuggingFaceAPI(ctx context.Context, model, prompt stri
 	chatModels := map[string]bool{
 		"mistralai/Mistral-7B-Instruct-v0.2": true,
 		"mistralai/Mistral-7B-Instruct-v0.3": true,
-		"meta-llama/Llama-3.1-8B-Instruct": true,
-		"meta-llama/Llama-3.2-3B-Instruct": true,
-		"Qwen/Qwen2.5-7B-Instruct": true,
-		"Qwen/Qwen2.5-14B-Instruct": true,
+		"meta-llama/Llama-3.1-8B-Instruct":   true,
+		"meta-llama/Llama-3.2-3B-Instruct":   true,
+		"Qwen/Qwen2.5-7B-Instruct":           true,
+		"Qwen/Qwen2.5-14B-Instruct":          true,
 		"microsoft/Phi-3-mini-128k-instruct": true,
-		"google/gemma-2-9b-it": true,
+		"google/gemma-2-9b-it":               true,
 	}
 
 	var payload map[string]interface{}
@@ -204,30 +204,30 @@ func (s *ChatService) callHuggingFaceAPI(ctx context.Context, model, prompt stri
 		// Use messages format for chat models
 		messages := s.promptToMessages(prompt)
 		payload = map[string]interface{}{
-			"inputs":            messages,
+			"inputs": messages,
 			"parameters": map[string]interface{}{
-				"max_new_tokens": maxTokens,
-				"temperature":   temperature,
-				"top_p":         s.cfg.TopP,
+				"max_new_tokens":   maxTokens,
+				"temperature":      temperature,
+				"top_p":            s.cfg.TopP,
 				"return_full_text": false,
 			},
 			"options": map[string]interface{}{
-				"use_cache":  false,
+				"use_cache":      false,
 				"wait_for_model": true,
 			},
 		}
 	} else {
 		// Use prompt format for older models
 		payload = map[string]interface{}{
-			"inputs":            prompt,
+			"inputs": prompt,
 			"parameters": map[string]interface{}{
-				"max_new_tokens": maxTokens,
-				"temperature":   temperature,
-				"top_p":         s.cfg.TopP,
+				"max_new_tokens":   maxTokens,
+				"temperature":      temperature,
+				"top_p":            s.cfg.TopP,
 				"return_full_text": false,
 			},
 			"options": map[string]interface{}{
-				"use_cache":  false,
+				"use_cache":      false,
 				"wait_for_model": true,
 			},
 		}

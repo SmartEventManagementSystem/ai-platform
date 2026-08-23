@@ -174,12 +174,12 @@ func (p *KafkaProducer) PublishRAGEvent(ctx context.Context, eventType string, d
 // PublishMCPToolEvent publishes MCP tool events to Kafka
 func (p *KafkaProducer) PublishMCPToolEvent(ctx context.Context, toolName string, success bool, latency time.Duration, data map[string]interface{}) error {
 	event := map[string]interface{}{
-		"type":     "mcp_tool_call",
-		"tool":     toolName,
-		"success":  success,
-		"latency":  latency.String(),
+		"type":      "mcp_tool_call",
+		"tool":      toolName,
+		"success":   success,
+		"latency":   latency.String(),
 		"timestamp": time.Now().UTC().Format(time.RFC3339),
-		"data":     data,
+		"data":      data,
 	}
 	return p.Publish("mcp.events", event)
 }
