@@ -1,7 +1,6 @@
 name: Build and Push
 
 on:
-  # BUILD: Mỗi khi push code lên main
   push:
     branches:
       - main
@@ -12,7 +11,6 @@ on:
       - 'Dockerfile'
       - '.github/workflows/build.yml'
 
-  # Manual trigger
   workflow_dispatch:
     inputs:
       tag:
@@ -58,68 +56,30 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Use existing Dockerfile or create one
-      - name: Prepare Dockerfile
+      - name: Create Dockerfile
+        if: "!contains(files, 'Dockerfile')"
         run: |
-          if [ ! -f Dockerfile ]; then
-            cat > Dockerfile << 'EOF'
-            # Build stage
-            FROM golang:1.22-alpine AS builder
+          cat > Dockerfile << 'DOCKERFILE_EOF'
+          FROM golang:1.22-alpine AS builder
+          RUN apk add --no-cache git ca-certificates tzdata
+          WORKDIR /app
+          COPY go.mod go.sum ./
+          RUN go mod download
+          COPY . .
+          RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o ai-service ./cmd/api
 
-            # Install build dependencies
-            RUN apk add --no-cache git ca-certificates tzdata
-
-            WORKDIR /app
-
-            # Copy go mod files
-            COPY go.mod go.sum ./
-            RUN go mod download
-
-            # Copy source code
-            COPY . .
-
-            # Build the application
-            RUN CGO_ENABLED=0 GOOS=linux go build \
-                -a -installsuffix cgo \
-                -ldflags="-w -s" \
-                -o ai-service \
-                ./cmd/api
-
-            # Production stage
-            FROM alpine:3.19
-
-            # Install CA certificates and timezone data
-            RUN apk --no-cache add ca-certificates tzdata
-
-            # Create non-root user
-            RUN addgroup -g 1000 appgroup && \
-                adduser -u 1000 -G appgroup -s /bin/sh -D appuser
-
-            WORKDIR /app
-
-            # Copy binary
-            COPY --from=builder /app/ai-service .
-
-            # Copy static files if exists
-            COPY --from=builder /app/migrations ./migrations 2>/dev/null || true
-
-            # Change ownership
-            RUN chown -R appuser:appgroup /app
-
-            # Switch to non-root user
-            USER appuser
-
-            # Expose port
-            EXPOSE 8081
-
-            # Health check
-            HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-              CMD wget -qO- http://localhost:8081/health || exit 1
-
-            # Run the application
-            CMD ["./ai-service"]
-            EOF
-          fi
+          FROM alpine:3.19
+          RUN apk --no-cache add ca-certificates tzdata
+          RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
+          WORKDIR /app
+          COPY --from=builder /app/ai-service .
+          COPY --from=builder /app/migrations ./migrations 2>/dev/null || true
+          RUN chown -R appuser:appgroup /app
+          USER appuser
+          EXPOSE 8081
+          HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD wget -qO- http://localhost:8081/health || exit 1
+          CMD ["./ai-service"]
+          DOCKERFILE_EOF
 
       - name: Build and Push
         uses: docker/build-push-action@v6
@@ -133,23 +93,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            GO_VERSION=${{ env.GO_VERSION }}
 
       - name: Discord Notification
         if: always()
         run: |
           STATUS="${{ job.status }}"
-          EMOJI="🔨"
           [ "$STATUS" == "success" ] && EMOJI="✅" || EMOJI="❌"
           curl -X POST "${{ vars.DISCORD_WEBHOOK || 'https://discord.com/api/webhooks/fake' }}" \
             -H "Content-Type: application/json" \
-            -d "{\"content\": \"$EMOJI ai-service:${{ steps.vars.outputs.tag }} $STATUS\nCommit: \`${{ github.sha }}\`\"}"
-        continue-on-error: true
+            -d "{\"content\": \"$EMOJI ai-service:${{ steps.vars.outputs.tag }} $STATUS\"}" || true
 
       - name: Summary
         run: |
-          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/ai-service:${{ steps.vars.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "## Build Summary"
+          echo "- **Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/ai-service:${{ steps.vars.outputs.tag }}\`"
+          echo "- **Commit:** \`${{ github.sha }}\`"
