@@ -33,9 +33,6 @@ WORKDIR /app
 # Copy binary
 COPY --from=builder /app/ai-service .
 
-# Copy migrations
-COPY --from=builder /app/migrations ./migrations 2>/dev/null || true
-
 # Change ownership
 RUN chown -R appuser:appgroup /app
 
@@ -44,10 +41,6 @@ USER appuser
 
 # Expose port
 EXPOSE 8081
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost:8081/health || exit 1
 
 # Run the application
 CMD ["./ai-service"]
